@@ -1,0 +1,22 @@
+## Normal gitignore for C/C++ dev on Linux
+# Compiled Object files
+*.o
+*.d
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# irrRenderer
+bin/RenderTest
+obj/*
