@@ -33,7 +33,27 @@ scene::ILightManagerCustom::~ILightManagerCustom()
 
 void scene::ILightManagerCustom::OnPreRender(core::array<ISceneNode*> &lightList)
 {
-    Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, true, false, video::SColor(0, 0, 0, 0));
+	// From Irrlicht svn r5075 (which is about contemporary with this version of irrRenderer)
+	/* setRenderTarget 	( 	IRenderTarget *  	target,
+	 *						const core::array< u32 > &  	activeTextureID,
+	 *						bool  	clearBackBuffer,
+	 *						bool  	clearDepthBuffer,
+	 *						bool  	clearStencilBuffer,
+	 *						SColor  	clearColor = video::SColor(255, 0, 0, 0) 
+	 * 					)
+	 */
+    
+    //Compare svn r6355 (ie: current svn)
+    /* setRenderTargetEx 	( 	IRenderTarget *  	target,
+	 *							u16  	clearFlag,
+	 *							SColor  	clearColor = SColor(255, 0, 0, 0),
+	 *							f32  	clearDepth = 1.f,
+	 *							u8  	clearStencil = 0 
+	 * 						)
+     */
+    
+    //Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, true, false, video::SColor(0, 0, 0, 0));
+    Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0));
 }
 
 void scene::ILightManagerCustom::OnPostRender()
@@ -50,14 +70,17 @@ void scene::ILightManagerCustom::OnRenderPassPostRender(scene::E_SCENE_NODE_REND
 {
     if (renderPass == scene::ESNRP_SOLID)
     {
-        Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
+        //Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
+        Device->getVideoDriver()->setRenderTargetEx(0, (video::ECBF_NONE), 0);
         deferred();
-        Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, false, false, 0);
+        //Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, false, false, 0);
+        Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_NONE), 0);
         
     }
     else if (renderPass == scene::ESNRP_TRANSPARENT)
     {
-        Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
+        //Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
+        Device->getVideoDriver()->setRenderTargetEx(0, (video::ECBF_NONE), 0);
         deferred();
     }
 }
@@ -116,10 +139,10 @@ void scene::ILightManagerCustom::setRenderTarget(video::IRenderTarget *RT)
     RenderTarget = RT;
     RenderIndices.clear();
     
-    for (u32 i = 0; i < RT->getTextures().size(); i++)
+    for (u32 i = 0; i < RT->getTexture().size(); i++)
     {
-        LightSphere->setMaterialTexture(i, RT->getTextures()[i]);
-        LightQuad->setMaterialTexture(i, RT->getTextures()[i]);
+        LightSphere->setMaterialTexture(i, RT->getTexture()[i]);
+        LightQuad->setMaterialTexture(i, RT->getTexture()[i]);
         RenderIndices.push_back(i);
     }
 }

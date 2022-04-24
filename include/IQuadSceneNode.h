@@ -25,6 +25,9 @@ class IQuadSceneNode : public irr::scene::ISceneNode
     protected:
         irr::video::SMaterial Material;
         irr::scene::SMeshBuffer* Buffer;
+        irr::video::S3DVertex Vertices[4];
+		irr::u16 Indices[6];
+		
 };
 
 }

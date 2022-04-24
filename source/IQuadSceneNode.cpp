@@ -1,5 +1,6 @@
 // This file is part of the "irrRenderer".
 // For conditions of distribution and use, see copyright notice in irrRenderer.h
+// I've modified this to follow parts of the screenquad example from irrlicht 1.9
 
 #include "IQuadSceneNode.h"
 
@@ -34,8 +35,24 @@ irr::scene::IQuadSceneNode::IQuadSceneNode(irr::scene::ISceneNode* parent, irr::
     Buffer->recalculateBoundingBox();
     //setScale(irr::core::vector3df(20,20,20));
     updateAbsolutePosition();
-    Material.ZBuffer = false;
-    Material.ZWriteEnable = false;
+    
+    // turn off lighting as default
+    Material.setFlag(video::EMF_LIGHTING, false);
+    
+	// set texture warp settings to clamp to edge pixel
+	for (u32 i = 0; i < video::MATERIAL_MAX_TEXTURES; i++)
+	{
+		Material.TextureLayer[i].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		Material.TextureLayer[i].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
+	}
+    
+    // for 1.8 (and contemporary svn?)
+    //Material.ZBuffer = false;
+    //Material.ZWriteEnable = false;
+    
+    // for 1.9 (current svn)
+    Material.ZBuffer = video::ECFN_DISABLED;
+    Material.ZWriteEnable = video::EZW_OFF;
 }
 
 irr::scene::IQuadSceneNode::~IQuadSceneNode()
@@ -45,10 +62,16 @@ irr::scene::IQuadSceneNode::~IQuadSceneNode()
 
 void irr::scene::IQuadSceneNode::render()
 {
-    irr::video::IVideoDriver* driver = SceneManager->getVideoDriver();
-    driver->setTransform(irr::video::ETS_WORLD, AbsoluteTransformation);
-    driver->setMaterial(Material);
-    driver->drawMeshBuffer(Buffer);
+	irr::video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	driver->setMaterial(Material);
+
+	driver->setTransform(irr::video::ETS_WORLD, AbsoluteTransformation);
+	// set matrices to fit the quad to full viewport
+	//driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	//driver->setTransform(video::ETS_VIEW, core::IdentityMatrix);
+	//driver->setTransform(video::ETS_PROJECTION, core::IdentityMatrix);
+
+	driver->drawMeshBuffer(Buffer);
 }
 
 void irr::scene::IQuadSceneNode::OnRegisterSceneNode()
