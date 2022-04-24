@@ -12,17 +12,18 @@ DEBUGFLAGS = -g
 ## Horrible quick hack to allow crpss-compilation from  Linux to Windows using mingw64
 # use `make all_linux` to get linux libs
 # use `make all_win32` to get windows libs
-# when switching between use `make clean` otherwise things might go awry
+# However you must set CXX=x86_64-w64-mingw32-c++ or another valid windows compiler.
+# When switching between use `make clean` otherwise things might go awry
 
 all: all_linux
 
 all_linux: CXX = g++
 all_linux: CPPFLAGS += -I/usr/X11R6/include
-all_linux: PLATFORM = linux
+all_linux: PLATFORM = Linux
 all_linux: release debug
 
 all_win32: CXX = x86_64-w64-mingw32-g++
-all_win32: PLATFORM = win32-gcc
+all_win32: PLATFORM = Win32-gcc
 all_win32: release debug
 
 debug: $(DEBUGOBJS)
@@ -35,11 +36,11 @@ release: $(OBJS)
 
 obj/%.o: source/%.cpp
 	mkdir -p $$(dirname $@)
-	g++ $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
 
 obj/debug/%.o: source/%.cpp
 	mkdir -p $$(dirname $@)
-	g++ $(CPPFLAGS) $(DEBUGFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) $(DEBUGFLAGS) -c -o $@ $<
 
 -include $(OBJS:.o=.d)
 
