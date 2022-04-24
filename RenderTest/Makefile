@@ -4,7 +4,7 @@ SOURCES := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp,obj/%.o,$(SOURCES))
 DEBUGOBJS := $(patsubst %.cpp,obj/debug/%.o,$(SOURCES))
 
-IRRLICHT := ../../irrlicht-1.8.5
+IRRLICHT := ../../irrlicht-1.9
 RENDERER := ..
 
 CPPFLAGS := -I$(RENDERER)/include -Iinclude -Wall -O2 -ffast-math -MMD -fPIC -I$(IRRLICHT)/include -I/usr/X11R6/include
