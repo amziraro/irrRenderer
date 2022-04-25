@@ -17,13 +17,13 @@ scene::ILightManagerCustom::ILightManagerCustom(IrrlichtDevice* device, video::S
     LightSphere->setMaterialFlag(video::EMF_FRONT_FACE_CULLING, true);
     LightSphere->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
     LightSphere->setMaterialFlag(video::EMF_ZBUFFER, false);
-    LightSphere->setVisible(false);
-
+	LightSphere->setVisible(false);
+	
     //set up light mesh - quad
     LightQuad= new scene::IQuadSceneNode(0, Device->getSceneManager());
-    LightQuad->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+	LightQuad->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
     LightQuad->setMaterialFlag(video::EMF_ZBUFFER, false);
-    LightQuad->setVisible(false);
+	LightQuad->setVisible(false);
 }
 
 scene::ILightManagerCustom::~ILightManagerCustom()
@@ -53,7 +53,7 @@ void scene::ILightManagerCustom::OnPreRender(core::array<ISceneNode*> &lightList
      */
     
     //Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, true, false, video::SColor(0, 0, 0, 0));
-    Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0));
+    Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0)); 
 }
 
 void scene::ILightManagerCustom::OnPostRender()
@@ -70,12 +70,11 @@ void scene::ILightManagerCustom::OnRenderPassPostRender(scene::E_SCENE_NODE_REND
 {
     if (renderPass == scene::ESNRP_SOLID)
     {
-        //Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
+		//Device->getVideoDriver()->setRenderTarget(0, 0, false, false, false, 0);
         Device->getVideoDriver()->setRenderTargetEx(0, (video::ECBF_NONE), 0);
         deferred();
         //Device->getVideoDriver()->setRenderTarget(RenderTarget, RenderIndices, false, false, false, 0);
         Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_NONE), 0);
-        
     }
     else if (renderPass == scene::ESNRP_TRANSPARENT)
     {
