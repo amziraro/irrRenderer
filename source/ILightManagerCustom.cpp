@@ -4,6 +4,7 @@
 #include "ILightManagerCustom.h"
 
 
+
 irr::scene::ILightManagerCustom::ILightManagerCustom(irr::IrrlichtDevice* device, irr::video::SMaterials* mats)
     :Device(device),
     Materials(mats),
@@ -37,6 +38,14 @@ irr::scene::ILightManagerCustom::ILightManagerCustom(irr::IrrlichtDevice* device
     LightQuad->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);
     LightQuad->setMaterialFlag(irr::video::EMF_ZBUFFER, false);
     LightQuad->setVisible(false);
+    
+    RenderTarget = Device->getVideoDriver()->addRenderTarget();
+    DepthBuffer = Device->getVideoDriver()->addRenderTargetTexture(Device->getVideoDriver()->getCurrentRenderTargetSize(),
+                                                "deferred-depth",
+                                                video::ECF_D32);
+    
+
+    
 }
 
 irr::scene::ILightManagerCustom::~ILightManagerCustom()
@@ -46,17 +55,9 @@ irr::scene::ILightManagerCustom::~ILightManagerCustom()
 
 void irr::scene::ILightManagerCustom::OnPreRender(core::array<ISceneNode*> & lightList)
 {
-	video::IVideoDriver* video = Device->getVideoDriver();
-	
-	irr::video::ITexture* DepthBuffer = video->addRenderTargetTexture(video->getCurrentRenderTargetSize(),
-                                                "deferred-depth",
-                                                video::ECF_G16R16F);
-	
-	video::IRenderTarget* RenderTarget = Device->getVideoDriver()->addRenderTarget();
 	RenderTarget->setTexture(MRTs, DepthBuffer);
-	
-    //video->setRenderTarget(MRTs, false, true);
-    video->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0));
+	//video->setRenderTarget(MRTs, false, true);
+     Device->getVideoDriver()->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0));
 }
 
 void irr::scene::ILightManagerCustom::OnPostRender()

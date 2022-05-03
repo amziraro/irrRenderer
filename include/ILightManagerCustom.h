@@ -78,6 +78,8 @@ class ILightManagerCustom : public irr::scene::ILightManager
 
         bool isAABBinFrustum(irr::core::aabbox3d<irr::f32> box, const irr::scene::SViewFrustum *frustum) const;
 
+		video::IRenderTarget* RenderTarget;
+		irr::video::ITexture* DepthBuffer;
 
         irr::video::E_MATERIAL_TYPE LightPointMaterial;
         irr::video::IShaderPointLightCallback* LightPointCallback;
