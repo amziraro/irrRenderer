@@ -28,7 +28,7 @@ irr::video::CRenderer::~CRenderer()
 
     for(irr::u32 i= 0; i < MRTs.size(); i++)
     {
-        Device->getVideoDriver()->removeTexture(MRTs[i].RenderTexture);
+        Device->getVideoDriver()->removeTexture(MRTs[i]);
     }
 
     Device->getSceneManager()->setLightManager(0);
@@ -92,7 +92,7 @@ void irr::video::CRenderer::clearMRTs()
 {
     for(irr::u32 i= 0; i < MRTs.size(); i++)
     {
-        Device->getVideoDriver()->removeTexture(MRTs[i].RenderTexture);
+        Device->getVideoDriver()->removeTexture(MRTs[i]);
     }
     MRTs.clear();
 }
@@ -102,13 +102,13 @@ void irr::video::CRenderer::createMRT(const irr::c8* name, irr::video::ECOLOR_FO
     if(MRTs.size() <= 4)
     {
         if(dimension.Height == 0 || dimension.Width == 0) dimension= Device->getVideoDriver()->getCurrentRenderTargetSize();
-        MRTs.push_back(irr::video::IRenderTarget(Device->getVideoDriver()->addRenderTargetTexture(dimension, name, format)));
+        MRTs.push_back(Device->getVideoDriver()->addRenderTargetTexture(dimension, name, format));
     }
 }
 
 irr::video::ITexture* irr::video::CRenderer::getMRT(irr::u32 index)
 {
-    return MRTs[index].RenderTexture;
+    return MRTs[index];
 }
 
 irr::u32 irr::video::CRenderer::getMRTCount() const

@@ -34,8 +34,12 @@ irr::scene::IQuadSceneNode::IQuadSceneNode(irr::scene::ISceneNode* parent, irr::
     Buffer->recalculateBoundingBox();
     //setScale(irr::core::vector3df(20,20,20));
     updateAbsolutePosition();
-    Material.ZBuffer = false;
-    Material.ZWriteEnable = false;
+    //Material.ZBuffer = false;
+    //Material.ZWriteEnable = false;
+   
+    // for 1.9 (current svn)
+    Material.ZBuffer = video::ECFN_DISABLED;
+    Material.ZWriteEnable = video::EZW_OFF;
 }
 
 irr::scene::IQuadSceneNode::~IQuadSceneNode()

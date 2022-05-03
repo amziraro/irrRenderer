@@ -34,7 +34,7 @@ class ILightManagerCustom : public irr::scene::ILightManager
         virtual void OnNodePostRender(irr::scene::ISceneNode *node);
 
 
-        void setMRTs(irr::core::array<irr::video::IRenderTarget> &mrts);
+        void setMRTs(irr::core::array<irr::video::ITexture*> mrts);
 
         void setRenderTexture(irr::video::ITexture* tex);
 
@@ -58,7 +58,7 @@ class ILightManagerCustom : public irr::scene::ILightManager
     private:
         irr::IrrlichtDevice* Device;
         irr::video::SMaterials* Materials;
-        irr::core::array<irr::video::IRenderTarget> MRTs;
+        irr::core::array<irr::video::ITexture*> MRTs;
         // solid objects are rendered with lighting into this texture, transcluent to be added later on
         irr::video::ITexture* SolidBuffer;
         int counter;

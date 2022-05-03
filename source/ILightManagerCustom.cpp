@@ -46,7 +46,17 @@ irr::scene::ILightManagerCustom::~ILightManagerCustom()
 
 void irr::scene::ILightManagerCustom::OnPreRender(core::array<ISceneNode*> & lightList)
 {
-    Device->getVideoDriver()->setRenderTarget(MRTs, false, true);
+	video::IVideoDriver* video = Device->getVideoDriver();
+	
+	irr::video::ITexture* DepthBuffer = video->addRenderTargetTexture(video->getCurrentRenderTargetSize(),
+                                                "deferred-depth",
+                                                video::ECF_G16R16F);
+	
+	video::IRenderTarget* RenderTarget = Device->getVideoDriver()->addRenderTarget();
+	RenderTarget->setTexture(MRTs, DepthBuffer);
+	
+    //video->setRenderTarget(MRTs, false, true);
+    video->setRenderTargetEx(RenderTarget, (video::ECBF_DEPTH), video::SColor(0, 0, 0, 0));
 }
 
 void irr::scene::ILightManagerCustom::OnPostRender()
@@ -89,7 +99,7 @@ void irr::scene::ILightManagerCustom::OnNodePreRender(irr::scene::ISceneNode *no
         }
         else if (node->getMaterial(0).MaterialType == Materials->TransparentSoft)
         {
-            node->setMaterialTexture(1, MRTs[2].RenderTexture);
+            node->setMaterialTexture(1, MRTs[2]);
             node->setMaterialFlag(irr::video::EMF_ZWRITE_ENABLE, false);
         }
     }
@@ -106,7 +116,7 @@ inline void irr::scene::ILightManagerCustom::deferred()
     LightQuad->setMaterialType(LightAmbientMaterial);
     for(irr::u32 i= 0; i < MRTs.size(); i++)
     {
-        LightQuad->setMaterialTexture(i, MRTs[i].RenderTexture);
+        LightQuad->setMaterialTexture(i, MRTs[i]);
     }
     LightQuad->render(); //also renders nodes with no lighting
 
@@ -157,15 +167,15 @@ inline void irr::scene::ILightManagerCustom::deferred()
 }
 
 
-void irr::scene::ILightManagerCustom::setMRTs(irr::core::array<irr::video::IRenderTarget> &mrts)
+void irr::scene::ILightManagerCustom::setMRTs(irr::core::array<irr::video::ITexture*> mrts)
 {
     MRTs= mrts;
 
     for(irr::u32 i= 0; i < MRTs.size(); i++)
     {
-        LightSphere->setMaterialTexture(i, MRTs[i].RenderTexture);
+        LightSphere->setMaterialTexture(i, MRTs[i]);
         //LightCone->setMaterialTexture(i, MRTs[i].RenderTexture);
-        LightQuad->setMaterialTexture(i, MRTs[i].RenderTexture);
+        LightQuad->setMaterialTexture(i, MRTs[i]);
     }
 }
 

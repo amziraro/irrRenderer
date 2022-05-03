@@ -115,7 +115,7 @@ class CRenderer
         irr::video::SMaterials* Materials;
         irr::video::CMaterialSwapper* MaterialSwapper;
 
-        irr::core::array<irr::video::IRenderTarget> MRTs;
+        irr::core::array<irr::video::ITexture*> MRTs;
 };
 
 }
