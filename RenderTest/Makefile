@@ -1,38 +1,54 @@
-TARGET := RenderTest
+# Based on the Irrlicht example makefiles...
 
-SOURCES := $(wildcard *.cpp)
-OBJS := $(patsubst %.cpp,obj/%.o,$(SOURCES))
-DEBUGOBJS := $(patsubst %.cpp,obj/debug/%.o,$(SOURCES))
+# Name of the executable created (.exe will be added automatically if necessary)
+Target := RenderTest
+# List of source files, separated by spaces
+Sources := main.cpp CTestFramework.cpp
+# Path to Irrlicht directory, should contain include/ and lib/
+IrrlichtHome := ../../irrlicht-1.9
+# Path for the executable. Note that Irrlicht.dll should usually also be there for win32 systems
+BinPath = ../bin/
 
-IRRLICHT := ../../irrlicht-1.9
-RENDERER := ..
+# general compiler settings (might need to be set when compiling the lib, too)
+CPPFLAGS += -I$(IrrlichtHome)/include -I../include
+ifndef NDEBUG
+CXXFLAGS += -g -Wall
+else
+CXXFLAGS += -O3
+endif
 
-CPPFLAGS := -I$(RENDERER)/include -Iinclude -Wall -O2 -ffast-math -MMD -fPIC -I$(IRRLICHT)/include -I/usr/X11R6/include
-DEBUGFLAGS = -g
+#default target is Linux
+all: all_linux
 
-LDFLAGS := -L$(IRRLICHT)/lib/Linux -lIrrlicht -lirrRenderer -lXxf86vm -lX11 -lGL -lEGL -lXext -lXcursor
+# target specific settings
+all_linux all_win32 static_win32: LDFLAGS += -L$(IrrlichtHome)/lib/$(SYSTEM) -L../lib/$(SYSTEM)/release -lirrRenderer -lIrrlicht
+all_linux: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm -lXext -lX11 -lXcursor
+all_linux clean_linux: SYSTEM=Linux
+all_win32 clean_win32 static_win32: SYSTEM=Win32-gcc
+all_win32 clean_win32 static_win32: SUF=.exe
+static_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
+all_win32: LDFLAGS += -lopengl32 -lm
+static_win32: LDFLAGS += -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32
+# name of the binary - only valid for targets which set SYSTEM
+DESTPATH = $(BinPath)/$(Target)$(SUF)
 
+all_linux all_win32 static_win32:
+	$(warning Building...)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(Sources) -o $(DESTPATH) $(LDFLAGS)
 
-all: release
+clean: clean_linux clean_win32
+	$(warning Cleaning...)
 
-debug: $(DEBUGOBJS)
-	g++ $(CPPFLAGS) $(DEBUGFLAGS) $^ -o ../bin/$(TARGET) $(LDFLAGS) -L$(RENDERER)/lib/linux/debug
+clean_linux clean_win32:
+	@$(RM) $(DESTPATH)
 
-release: $(OBJS)
-	g++ $(CPPFLAGS) $^ -o ../bin/$(TARGET) $(LDFLAGS) -L$(RENDERER)/lib/linux/release
+.PHONY: all all_win32 static_win32 clean clean_linux clean_win32
 
-obj/%.o: %.cpp
-	mkdir -p $$(dirname $@)
-	g++ $(CPPFLAGS) -c -o $@ $<
-
-obj/debug/%.o: %.cpp
-	mkdir -p $$(dirname $@)
-	g++ $(CPPFLAGS) $(DEBUGFLAGS) -c -o $@ $<
-
--include $(OBJS:.o=.d)
-
-clean:
-	rm -rf obj
-
-
-.PHONY: all debug release clean
+#multilib handling
+ifeq ($(HOSTTYPE), x86_64)
+LIBSELECT=64
+endif
+#solaris real-time features
+ifeq ($(HOSTTYPE), sun4)
+LDFLAGS += -lrt
+endif
